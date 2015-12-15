@@ -1,9 +1,16 @@
 {
   "name": "heroku-fastly",
   "version": "0.0.1",
-  "description": "fastly tools",
+  "description": "Tools for interacting with Fastly CDN",
   "main": "index.js",
-  "author": "Fastly Inc. support@fastly.com",
+  "author": "Fastly, Inc. <support@fastly.com>",
+  "contributors": [{
+    "name": "Michael May",
+    "email": "michael@fastly.com"
+  }],
+  "scripts": {
+    "test": "mocha && jshint ."
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/fastly/heroku-fastly"
@@ -14,5 +21,9 @@
   "keywords": [
     "heroku-plugin"
   ],
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "*",
+    "jshint": "*"
+  }
 }

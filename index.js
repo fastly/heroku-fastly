@@ -1,10 +1,9 @@
 'use strict';
 exports.topic = {
   name: 'fastly',
-  // this is the help text that shows up under `heroku help`
-  description: 'fastly tools'
+  description: 'Tools for interacting with Fastly CDN'
 };
 
 exports.commands = [
-  require('./commands/purge.js')
+  require('./commands/purge')
 ];
