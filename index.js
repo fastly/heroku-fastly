@@ -1,9 +1,10 @@
 'use strict';
 exports.topic = {
   name: 'fastly',
-  description: 'Tools for interacting with Fastly CDN'
+  description: 'Fastly CDN CLI tools for Heroku'
 };
 
 exports.commands = [
-  require('./commands/purge')
+  require('./commands/purge'),
+  require('./commands/tls')
 ];
