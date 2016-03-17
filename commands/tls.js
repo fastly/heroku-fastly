@@ -45,7 +45,7 @@ Usage: \n\
         }
       }, function(err, response, body) {
         if (response.statusCode != 200) {
-          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + body);
+          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + JSON.parse(body).msg);
         } else {
           hk.styledHeader("Domain " + context.args.domain + " queued for TLS removal. This domain will no longer support TLS");
         }
@@ -68,7 +68,7 @@ Usage: \n\
         }
       }, function(err, response, body) {
         if (response.statusCode != 200) {
-          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + body);
+          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + JSON.parse(body).msg);
         } else {
           hk.styledHeader("Domain " + context.args.domain + " queued for TLS addition.");
           hk.warn("Follow the instructions for " + context.flags.verification + " domain verification to complete TLS configuration.");
