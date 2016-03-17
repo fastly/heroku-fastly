@@ -1,7 +1,7 @@
 {
   "name": "heroku-fastly",
   "version": "0.0.1",
-  "description": "Tools for interacting with Fastly CDN",
+  "description": "Heroku CLI Plugin for interacting with Fastly CDN",
   "main": "index.js",
   "author": "Fastly, Inc. <support@fastly.com>",
   "contributors": [{
@@ -27,6 +27,7 @@
     "request": "^2.69.0"
   },
   "devDependencies": {
+    "chai": "*",
     "mocha": "*",
     "jshint": "*"
   }
