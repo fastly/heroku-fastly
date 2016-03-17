@@ -1,4 +1,6 @@
 'use strict';
+var hk = require('heroku-cli-util');
+
 module.exports = {
   topic: 'fastly',
   command: 'purge',
@@ -11,6 +13,6 @@ module.exports = {
 
   run: function (context) {
       // Fastly.purge_url();
-      console.log('Purge request issued for url: ');
+      hk.styledHeader('Not yet implemented');
   }
 };
