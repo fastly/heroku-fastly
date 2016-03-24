@@ -2,37 +2,63 @@
 
 Heroku CLI plugin for interacting with fastly configuration.
 
+
+
 # Installation
+Install the heroku-fastly plugin using the `heroku plugins` command. More details are available in Heroku's [Devcenter](https://devcenter.heroku.com/articles/using-cli-plugins)
 
 ```
 $ heroku plugins:install heroku-fastly
 ```
 
 # Usage
+The CLI Plugin includes two commands - `purge` and `tls`.
+
+## TLS
+To add TLS to a domain your pricing plan must include a TLS domain and the domain must be configured in the active version of your Fastly Service.
 
 ```
-$ heroku fastly:tls --help
-Usage: heroku fastly:tls
+Usage: heroku fastly:tls DOMAIN [VERIFICATION_TYPE]
+```
 
-Heroku CLI plugin for Fastly TLS configuration
+To add TLS/SSL to a custom domain:
 
- -c, --create        # Add the provided domain to a Fastly SAN certificate
- -r, --remove        # Remove domain from a Fastly SAN certficate
- -d, --domain DOMAIN # The fully qualified domain name to add to a Fastly SAN certificate
- -v, --verification VERIFICATION # The domain verification method to use - valid types are email, dns, or url
- -a, --app APP       # app to run command against
- -r, --remote REMOTE # git remote of app to run command against
+```
+heroku fastly:tls www.example.org dns --app my-fast-app
+```
 
-Add or remove a domain for use with TLS.
-   Domains will be added to a SAN certificate. For details see: https://docs.fastly.com/guides/securing-communications/ordering-a-paid-tls-option#shared-certificate
-   Usage:
+To remove TLS/SSL from a custom domain, include the the `-d` flag:
 
-   heroku fastly:tls -c -d www.example.org -v email -a my-example-app
+```
+heroku fastly:tls -d www.example.com --app my-fast-app
+```
+
+## Purge
+Issue a surrogate key purge or purge all. For reference, see the [Purge API docs](https://docs.fastly.com/api/purge)
+
+```
+Usage: heroku fastly:purge [KEY]
+```
+
+To purge the entire cache
+
+```
+heroku fastly:purge --all --app my-fast-app
+```
+
+To purge a surrogate-key from the cache
+
+```
+heroku fastly:purge my-surrogate-key --app my-fast-app
 ```
 
 # Development
-
+Clone the repo and run `npm install` to install dependencies.
 
 ## Testing
+Tests can be run with `npm test`
+
+## Contributing
+Have an issue? Want to see new functionality? Please open an issue or pull request.
 
 
