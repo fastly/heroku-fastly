@@ -42,7 +42,7 @@ Usage: \n\
       process.exit(1);
     }
 
-    if (context.flags.remove) {
+    if (context.flags.delete) {
       request({
         method: 'DELETE',
         url: base_uri + '/plugin/heroku/tls',
