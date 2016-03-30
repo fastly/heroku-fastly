@@ -12,14 +12,15 @@ Requirements: \n\
  - Heroku pricing plan must include TLS Domain(s)\n\
  - Wildcard domains are not allowed \n\n\
 You must verify ownership of DOMAIN after running this command. \n\
-Valid VERFICATION_TYPES provided by our CA are: email, dns, url \n\n\
-  Email: Email approval sent to addresse(s) the CA specifies as the owner of the domain \n\
-  DNS: DNS text record approval. \n\
-  URL: Root URL that has a metatag in the head section, where the CA specifies the metatag. Please note that they cannot reside on a page under the root domain.  For example, placing the metatag at `www.example.com/index.html` will **not** work.  It must be placed on `www.example.com`. \n\
-For details: https://docs.fastly.com/guides/securing-communications/ordering-a-paid-tls-option#shared-certificate \n\n\
+Valid VERIFICATION_TYPES provided by our CA are: email, dns, url \n\
+We reccomend using DNS verification because its usually the easiest change to make.\n\n\
+  Email: Email approval sent to an address the CA specifies as the owner of the domain. This is usually admin, administrator, hostmaster, postmaster, or webmaster @<your_domain>\n\
+  DNS: Create a DNS TXT record with the provided metatag. \n\
+  URL: Create a HTML META-tag in the HEAD section of the root page on your domain with the provided metatag. Please note that they cannot reside on a page under the root domain.\n\
+Some details can be found at: https://support.globalsign.com/customer/portal/articles/1345666-verify-domain-ownership---approver-url-method- \n\n\
 Usage: \n\
    heroku fastly:tls www.example.org dns --app my-fast-app\n\
-   heroku fastly:tls www.example.org -d --app my-fast-app',
+   heroku fastly:tls -d www.example.org --app my-fast-app',
   needsApp: true,
   needsAuth: true,
   args: [
@@ -81,8 +82,24 @@ Usage: \n\
           hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + JSON.parse(body).msg);
           process.exit(1);
         } else {
-          hk.styledHeader("Domain " + context.args.domain + " queued for TLS addition.");
-          hk.warn("Follow the instructions for " + context.args.verification_type + " domain verification to complete TLS configuration.");
+          hk.styledHeader(context.args.domain + " queued for TLS addition.");
+          hk.warn("Please proceed with domain verification. You chose to verify using " + context.args.verification_type);
+          var parsed = JSON.parse(body)
+          switch(context.args.verification_type.toLowerCase())  {
+            case 'email':
+              hk.warn("Email Verification: An email with a verification link will be sent to one of: admin@, administrator@, hostmaster@, postmaster@, webmaster@, or the email listed in the WHOIS record");
+              break;
+
+            case 'dns':
+              hk.warn("DNS Verification: Create a DNS TXT record containing the following content");
+              hk.warn("globalsign-domain-verification=" + parsed.metatag);
+              break;
+
+            case 'url':
+              hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site");
+              hk.warn("<meta name=\"globalsign-domain-verification\" content=\"" + parsed.metatag + "\"/>");
+              break;
+          }
         }
       });
     }
