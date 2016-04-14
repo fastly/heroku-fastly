@@ -55,7 +55,7 @@ heroku fastly:purge my-surrogate-key --app my-fast-app
 # Development
 Clone the repo and run `npm install` to install dependencies.
 
-Further detail on building heroku cli plugins is available in the [devcenter](https://devcenter.heroku.com/articles/developing-toolbelt-plug-in)
+Further detail on building Heroku CLI plugins is available in the [devcenter](https://devcenter.heroku.com/articles/developing-toolbelt-plug-ins)
 
 ## Testing
 Tests can be run with `npm test`
