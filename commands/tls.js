@@ -13,11 +13,10 @@ Requirements: \n\
  - Wildcard domains are not allowed \n\n\
 You must verify ownership of DOMAIN after running this command. \n\
 Valid VERIFICATION_TYPES provided by our CA are: email, dns, url \n\
-We reccomend using DNS verification because its usually the easiest change to make.\n\n\
+We strongly reccomend using DNS verification. Typically it is the easiest and quickest way to verify.\n\n\
   Email: Email approval sent to an address the CA specifies as the owner of the domain. This is usually admin, administrator, hostmaster, postmaster, or webmaster @<your_domain>\n\
   DNS: Create a DNS TXT record with the provided metatag. \n\
-  URL: Create a HTML META-tag in the HEAD section of the root page on your domain with the provided metatag. Please note that they cannot reside on a page under the root domain.\n\
-Some details can be found at: https://support.globalsign.com/customer/portal/articles/1345666-verify-domain-ownership---approver-url-method- \n\n\
+  URL: Create a HTML META-tag in the HEAD section of the root page on your domain with the provided metatag. Please note that they cannot reside on a page under the root domain.\n\n\
 Usage: \n\
    heroku fastly:tls www.example.org dns --app my-fast-app\n\
    heroku fastly:tls -d www.example.org --app my-fast-app',
