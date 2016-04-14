@@ -6,29 +6,28 @@ module.exports = {
   topic: 'fastly',
   command: 'tls',
   description: 'Add/Remove Fastly TLS to DOMAIN',
-  help: 'DOMAIN will be added to a Fastly/Heroku SAN SSL certificate. \n\n\
+  help: 'DOMAIN will be added to a Fastly Heroku SAN SSL certificate. \n\n\
 Requirements: \n\
- - The Fastly Service must have DOMAIN configured in the active version. \n\
- - Heroku pricing plan must include TLS Domain(s)\n\
+ - The Fastly Service must have DOMAIN configured in the active version \n\
+ - Heroku pricing plan must include TLS Domain(s) \n\
  - Wildcard domains are not allowed \n\n\
 You must verify ownership of DOMAIN after running this command. \n\
-Valid VERIFICATION_TYPES provided by our CA are: email, dns, url \n\
-We strongly reccomend using DNS verification. Typically it is the easiest and quickest way to verify.\n\n\
-  Email: Email approval sent to an address the CA specifies as the owner of the domain. This is usually admin, administrator, hostmaster, postmaster, or webmaster @<your_domain>\n\
-  DNS: Create a DNS TXT record with the provided metatag. \n\
-  URL: Create a HTML META-tag in the HEAD section of the root page on your domain with the provided metatag. Please note that they cannot reside on a page under the root domain.\n\n\
+Valid VERIFICATION_TYPES are: dns, email, url \n\
+  DNS (recommended): Create a DNS TXT record with the provided metatag via your DNS provider. \n\
+  Email: Verification email sent to the domain owner. This is usually admin, administrator, hostmaster, postmaster, or webmaster @<your_domain>\n\
+  URL: Create a HTML META-tag with the provided content in the HEAD section of the root page on your domain. Please note that they cannot reside on a page under the root domain.\n\n\
 Usage: \n\
    heroku fastly:tls www.example.org dns --app my-fast-app\n\
    heroku fastly:tls -d www.example.org --app my-fast-app',
   needsApp: true,
   needsAuth: true,
   args: [
-    {name: 'domain', description: 'the domain to add TLS'},
-    {name: 'verification_type', description: 'The method to use for domain verification. Must be one of: email, dns, or url', optional: true},
+    {name: 'domain', description: 'The domain for TLS configure'},
+    {name: 'verification_type', description: 'The domain verification method to use. Must be dns, email, or url', optional: true},
   ],
   flags: [
     {name: 'delete', char: 'd', description: 'Remove TLS from DOMAIN', hasValue: false},
-    {name: 'api_key', char: 'k', description: 'Override Fastly_API_KEY config var', hasValue: true},
+    {name: 'api_key', char: 'k', description: 'Override FASTLY_API_KEY config var', hasValue: true},
     {name: 'api_uri', char: 'u', description: 'Override Fastly API URI', hasValue: true}
   ],
   run: hk.command(function* (context, heroku) {
