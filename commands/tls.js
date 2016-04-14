@@ -61,8 +61,6 @@ Usage: \n\
       });
 
     } else { 
-      // domain addition is default command
-
       if (!context.args.verification_type) {
         hk.error('VERIFICATION_TYPE is required to provision TLS. Use: email, dns, or url');
         process.exit(1);
@@ -84,7 +82,7 @@ Usage: \n\
         } else {
           hk.styledHeader(context.args.domain + " queued for TLS addition.");
           hk.warn("Please proceed with domain verification. You chose to verify using " + context.args.verification_type);
-          var parsed = JSON.parse(body)
+          var json = JSON.parse(body)
           switch(context.args.verification_type.toLowerCase())  {
             case 'email':
               hk.warn("Email Verification: An email with a verification link will be sent to one of: admin@, administrator@, hostmaster@, postmaster@, webmaster@, or the email listed in the WHOIS record");
@@ -92,14 +90,16 @@ Usage: \n\
 
             case 'dns':
               hk.warn("DNS Verification: Create a DNS TXT record containing the following content");
-              hk.warn("globalsign-domain-verification=" + parsed.metatag);
+              hk.warn("globalsign-domain-verification=" + json.metatag);
               break;
 
             case 'url':
               hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site");
-              hk.warn("<meta name=\"globalsign-domain-verification\" content=\"" + parsed.metatag + "\"/>");
+              hk.warn("<meta name=\"globalsign-domain-verification\" content=\"" + json.metatag + "\"/>");
               break;
           }
+          hk.warn("Configure the following CNAME *after* domain verification:\n")
+          hk.warn("CNAME  " + json.order.domain + "  " + json.fqdn);
         }
       });
     }
