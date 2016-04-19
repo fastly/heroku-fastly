@@ -78,8 +78,8 @@ Usage: \n\
           hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + JSON.parse(body).msg);
           process.exit(1);
         } else {
-          hk.styledHeader(context.args.domain + " queued for TLS addition.");
-          hk.warn("Please proceed with domain verification. You chose to verify using " + context.args.verification_type);
+          hk.styledHeader("Domain " + context.args.domain + " has been queued for TLS certificate addition. This may take a few minutes.");
+          hk.warn("In the mean time, you can continue by starting the domain verification process. You chose to verify using " + context.args.verification_type);
           var json = JSON.parse(body)
           switch(context.args.verification_type.toLowerCase())  {
             case 'email':
@@ -87,12 +87,12 @@ Usage: \n\
               break;
 
             case 'dns':
-              hk.warn("DNS Verification: Create a DNS TXT record containing the following content");
+              hk.warn("DNS Verification: Create a DNS TXT record containing the following content\n");
               hk.warn("globalsign-domain-verification=" + json.metatag);
               break;
 
             case 'url':
-              hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site");
+              hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site\n");
               hk.warn("<meta name=\"globalsign-domain-verification\" content=\"" + json.metatag + "\"/>");
               break;
           }
