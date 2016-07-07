@@ -97,7 +97,7 @@ Usage: \n\
               break;
           }
           hk.warn("Configure the following CNAME *after* domain verification:\n")
-          hk.warn("CNAME  " + json.order.domain + "  " + json.fqdn);
+          hk.warn("CNAME  " + json.order.domain + "  " + json.name);
         }
       });
     }
