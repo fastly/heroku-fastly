@@ -1,6 +1,6 @@
 {
   "name": "heroku-fastly",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Heroku CLI Plugin for interacting with Fastly CDN",
   "homepage": "https://www.fastly.com",
   "main": "index.js",
