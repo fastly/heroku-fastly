@@ -74,30 +74,30 @@ Usage: \n\
           service_id: config.FASTLY_SERVICE_ID
         }
       }, function(err, response, body) {
-        var json = JSON.parse(body);
         if (response.statusCode != 200) {
-          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + json.msg);
+          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + JSON.parse(body).msg);
           process.exit(1);
         } else {
-          hk.styledHeader(context.args.domain + " queued for TLS addition.");
-          hk.warn("Please proceed with domain verification. You chose to verify using " + context.args.verification_type);
+          hk.styledHeader("Domain " + context.args.domain + " has been queued for TLS certificate addition. This may take a few minutes.");
+          hk.warn("In the mean time, you can continue by starting the domain verification process. You chose to verify using " + context.args.verification_type);
+          var json = JSON.parse(body)
           switch(context.args.verification_type.toLowerCase())  {
             case 'email':
               hk.warn("Email Verification: An email with a verification link will be sent to one of: admin@, administrator@, hostmaster@, postmaster@, webmaster@, or the email listed in the WHOIS record");
               break;
 
             case 'dns':
-              hk.warn("DNS Verification: Create a DNS TXT record containing the following content");
+              hk.warn("DNS Verification: Create a DNS TXT record containing the following content\n");
               hk.warn("globalsign-domain-verification=" + json.metatag);
               break;
 
             case 'url':
-              hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site");
+              hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site\n");
               hk.warn("<meta name=\"globalsign-domain-verification\" content=\"" + json.metatag + "\"/>");
               break;
           }
           hk.warn("Configure the following CNAME *after* domain verification:\n")
-          hk.warn("CNAME  " + json.order.domain + "  " + json.name);
+          hk.warn("CNAME  " + json.order.domain + "  " + json.fqdn);
         }
       });
     }
