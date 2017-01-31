@@ -62,7 +62,7 @@ if (context.args.verification_action.toLowerCase() == "status") {
     if (!error && response.statusCode == 200) {
       let json = JSON.parse(body);
       cli.warn("State:" + json.state,  "Approvals:"  + json.approvals.toString());
-        if (json.state == "issued") {
+        if (json.state == "created") {
           cli.warn("Your cert has been issued. It can take up to an hour for it to become available. To check its availability, navigate to 'https://www.ssllabs.com/ssltest/' ")
         }
     }
