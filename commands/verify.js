@@ -17,6 +17,11 @@ function* app (context, heroku) {
   var url = base_uri + '/plugin/heroku/tls/status' + url_params;
   let approval = null;
 
+console.log(url);
+console.log(api_key);
+
+  if  (context.args.verification_action.toLowerCase() == "start") {
+  //start
   request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       let json = JSON.parse(body);
@@ -41,11 +46,13 @@ function* app (context, heroku) {
           }
         }, function(err, response, body) {
           if (!error && response.statusCode == 200) {
-            cli.warn("Domain queued for verification");
+            cli.warn("Domain queued for verification. This takes approximately 30 minutes. To check the status, run 'heroku fastly:verify status <domain> --app <app_name>'");
           } else { //POST req error
             cli.error(body);
           }
         });
+
+
       });
     }
     else { //GET req error
@@ -55,19 +62,40 @@ function* app (context, heroku) {
 
 }
 
+if (context.args.verification_action.toLowerCase() == "status") {
+    request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      let json = JSON.parse(body);
+      cli.warn("State:" + json.state,  "Approvals:"  + json.approvals.toString());
+        if (json.state == "issued") {
+          cli.warn("Your cert has been issued. It can take up to an hour for it to become available. To check its availability, navigate to 'https://www.ssllabs.com/ssltest/' ")
+        }
+    }
+    else {
+      cli.error(body);
+    }
+    });
+  }
+
+
+
+}
+
 module.exports = {
   topic: 'fastly',
   command: 'verify',
-  description: 'Start domain verification for DOMAIN after successfully running `fastly:tls` and configuring verification metatag in DNS or URL.',
+  description: 'Start domain verification for DOMAIN after successfully running `fastly:tls` and configuring verification metatag in DNS.',
   help: 'This validates the metatag you set as a DNS TXT record or as metatag in the html of your root page.',
   needsApp: true,
   needsAuth: true,
   args: [
+    {name: 'verification_action', description: 'Start the verification process, check on its status, or confirm its completion.', optional: false},
     {name: 'domain', description: 'The domain to verify', optional: false}
+    
   ],
   flags: [
     {name: 'api_key', char: 'k', description: 'Override Fastly_API_KEY config var', hasValue: true},
     {name: 'api_uri', char: 'u', description: 'Override Fastly API URI', hasValue: true}
   ],
-  run: cli.command(co.wrap(app))
+  run: cli.command(app)
 };
