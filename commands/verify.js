@@ -17,11 +17,7 @@ function* app (context, heroku) {
   var url = base_uri + '/plugin/heroku/tls/status' + url_params;
   let approval = null;
 
-console.log(url);
-console.log(api_key);
-
   if  (context.args.verification_action.toLowerCase() == "start") {
-  //start
   request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       let json = JSON.parse(body);
@@ -47,15 +43,14 @@ console.log(api_key);
         }, function(err, response, body) {
           if (!error && response.statusCode == 200) {
             cli.warn("Domain queued for verification. This takes approximately 30 minutes. To check the status, run 'heroku fastly:verify status <domain> --app <app_name>'");
-          } else { //POST req error
+          } else {
             cli.error(body);
           }
         });
 
-
       });
     }
-    else { //GET req error
+    else {
       cli.error(body);
     }
   });
@@ -76,8 +71,6 @@ if (context.args.verification_action.toLowerCase() == "status") {
     }
     });
   }
-
-
 
 }
 

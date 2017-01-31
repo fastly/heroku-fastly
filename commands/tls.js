@@ -79,8 +79,8 @@ Usage: \n\
           hk.warn("globalsign-domain-verification=" + json.metatag);
           }
           hk.warn("Configure the following CNAME *after* domain verification:\n")
-          var cname = json.fqdn.replace("*.", "");
-          hk.warn("CNAME  " + json.order.domain + "  " + cname);
+          var fqdn = json.fqdn.replace("*.", "");
+          hk.warn("CNAME  " + json.order.domain + "  " + fqdn);
         
       });
     }
