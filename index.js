@@ -6,5 +6,9 @@ exports.topic = {
 
 exports.commands = [
   require('./commands/purge'),
-  require('./commands/tls')
+  require('./commands/tls'),
+  require('./commands/log-list'),
+  require('./commands/log-create'),
+  require('./commands/log-delete'),
+  require('./commands/log-detail')
 ];
