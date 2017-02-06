@@ -71,17 +71,12 @@ Usage: \n\
           process.exit(1);
         } else {
           hk.styledHeader("Domain " + context.args.domain + " has been queued for TLS certificate addition. This may take a few minutes.");
-          hk.warn("In the mean time, you can continue by starting the domain verification process.");
+          hk.warn("In the mean time, you can continue by starting the domain verification process with `heroku fastly:verify start DOMAIN`.");
 
           var json = JSON.parse(body)
-          
           hk.warn("Create a DNS TXT record containing the following content\n");
           hk.warn("globalsign-domain-verification=" + json.metatag);
           }
-          hk.warn("Configure the following CNAME *after* domain verification:\n")
-          var fqdn = json.fqdn.replace("*.", "");
-          hk.warn("CNAME  " + json.order.domain + "  " + fqdn);
-        
       });
     }
   })

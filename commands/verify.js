@@ -61,9 +61,15 @@ if (context.args.verification_action.toLowerCase() == "status") {
     request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       let json = JSON.parse(body);
-      cli.warn("State:" + json.state,  "Approvals:"  + json.approvals.toString());
-        if (json.state == "created") {
-          cli.warn("Your cert has been issued. It can take up to an hour for it to become available. To check its availability, navigate to 'https://www.ssllabs.com/ssltest/' ")
+        cli.warn("Staatus: " + json.state);
+        if (json.state == "issued") {
+          cli.warn("Your cert has been issued. It can take up to an hour for it to become available. To check its availability, you can navigate to 'https://www.ssllabs.com/ssltest/' \n")
+          cli.warn("Configure the following CNAME when the cert becomes available:\n")
+          var fqdn = json.fqdn.replace("*.", "");
+          console.log(json);
+          hk.warn("CNAME  " + context.args.domain + "  " + json.fqdn);
+        } else {
+          cli.warn("Your cert has not yet been issued.")
         }
     }
     else {
@@ -84,7 +90,6 @@ module.exports = {
   args: [
     {name: 'verification_action', description: 'Start the verification process, check on its status, or confirm its completion.', optional: false},
     {name: 'domain', description: 'The domain to verify', optional: false}
-    
   ],
   flags: [
     {name: 'api_key', char: 'k', description: 'Override Fastly_API_KEY config var', hasValue: true},
