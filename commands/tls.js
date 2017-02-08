@@ -12,18 +12,14 @@ Requirements: \n\
  - Heroku pricing plan must include TLS Domain(s) \n\
  - Wildcard domains are not allowed \n\n\
 You must verify ownership of DOMAIN after running this command. \n\
-Valid VERIFICATION_TYPES are: dns, email, url \n\
-  DNS (recommended): Create a DNS TXT record with the provided metatag via your DNS provider. \n\
-  Email: Verification email sent to the domain owner. This is usually admin, administrator, hostmaster, postmaster, or webmaster @<your_domain>\n\
-  URL: Create a HTML META-tag with the provided content in the HEAD section of the root page on your domain. Please note that they cannot reside on a page under the root domain.\n\n\
+Valid VERIFICATION_TYPES: dns\n\
+  DNS: Create a DNS TXT record with the provided metatag via your DNS provider. \n\
 Usage: \n\
-   heroku fastly:tls www.example.org dns --app my-fast-app\n\
-   heroku fastly:tls -d www.example.org --app my-fast-app',
+  heroku fastly:tls www.example.org dns --app my-fast-app\n\ ',
   needsApp: true,
   needsAuth: true,
   args: [
     {name: 'domain', description: 'The domain for TLS configure'},
-    {name: 'verification_type', description: 'The domain verification method to use. Must be dns, email, or url', optional: true},
   ],
   flags: [
     {name: 'delete', char: 'd', description: 'Remove TLS from DOMAIN', hasValue: false},
@@ -59,46 +55,27 @@ Usage: \n\
       });
 
     } else { 
-      if (!context.args.verification_type) {
-        hk.error('VERIFICATION_TYPE is required to provision TLS. Use: email, dns, or url');
-        process.exit(1);
-      }
-
       request({
         method: 'POST',
         url: base_uri + '/plugin/heroku/tls',
         headers: { 'Fastly-Key': api_key, 'Content-Type': 'application/json' },
         form: {
           domain: context.args.domain,
-          verification_type: context.args.verification_type,
+          verification_type: 'dns',
           service_id: config.FASTLY_SERVICE_ID
         }
       }, function(err, response, body) {
-        var json = JSON.parse(body);
         if (response.statusCode != 200) {
-          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + json.msg);
+          hk.error("Fastly API request Error! code: " + response.statusCode + " " + response.statusMessage + " " + JSON.parse(body).msg);
           process.exit(1);
         } else {
-          hk.styledHeader(context.args.domain + " queued for TLS addition.");
-          hk.warn("Please proceed with domain verification. You chose to verify using " + context.args.verification_type);
-          switch(context.args.verification_type.toLowerCase())  {
-            case 'email':
-              hk.warn("Email Verification: An email with a verification link will be sent to one of: admin@, administrator@, hostmaster@, postmaster@, webmaster@, or the email listed in the WHOIS record");
-              break;
+          hk.styledHeader("Domain " + context.args.domain + " has been queued for TLS certificate addition. This may take a few minutes.");
+          hk.warn("In the mean time, you can continue by starting the domain verification process with `heroku fastly:verify start DOMAIN`.");
 
-            case 'dns':
-              hk.warn("DNS Verification: Create a DNS TXT record containing the following content");
-              hk.warn("globalsign-domain-verification=" + json.metatag);
-              break;
-
-            case 'url':
-              hk.warn("URL Verification: Insert the following metatag into the <head> section on the root page of your site");
-              hk.warn("<meta name=\"globalsign-domain-verification\" content=\"" + json.metatag + "\"/>");
-              break;
+          var json = JSON.parse(body)
+          hk.warn("Create a DNS TXT record containing the following content\n");
+          hk.warn("globalsign-domain-verification=" + json.metatag);
           }
-          hk.warn("Configure the following CNAME *after* domain verification:\n")
-          hk.warn("CNAME  " + json.order.domain + "  " + json.name);
-        }
       });
     }
   })

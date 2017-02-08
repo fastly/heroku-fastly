@@ -12,10 +12,11 @@ $ heroku plugins:install heroku-fastly
 ```
 
 # Usage
-The CLI Plugin includes two commands - `purge` and `tls`.
+The CLI Plugin includes the commands - `purge`, `verify`, and `tls`.
 
 ## TLS
 To add TLS to a domain your pricing plan must include a TLS domain and the domain must be configured in the active version of your Fastly Service.
+The process involves creating the TLS Domain, verifying ownership of your domain, and checking the verification status of your domain.
 
 ```
 Usage: heroku fastly:tls DOMAIN [VERIFICATION_TYPE]
@@ -24,8 +25,21 @@ Usage: heroku fastly:tls DOMAIN [VERIFICATION_TYPE]
 To add TLS/SSL to a custom domain:
 
 ```
-heroku fastly:tls www.example.org dns --app my-fast-app
+heroku fastly:tls www.example.org --app my-fast-app
 ```
+Create a DNS TXT record with the verification string output from this command.
+
+```
+heroku fastly:verify start www.example.org --app my-fast-app
+```
+Verfies ownership of the domain via the DNS TXT record added from output of the previous command.
+
+
+```
+heroku fastly:tls status www.example.org --app my-fast-app
+```
+Checks the status of the verification process. If complete, a new CNAME will be output that you can update to after the new certificate propages to all caches.
+
 
 To remove TLS/SSL from a custom domain, include the the `-d` flag:
 
