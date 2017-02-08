@@ -36,7 +36,7 @@ Verfies ownership of the domain via the DNS TXT record added from output of the 
 
 
 ```
-heroku fastly:tls status www.example.org --app my-fast-app
+heroku fastly:verify status www.example.org --app my-fast-app
 ```
 Checks the status of the verification process. If complete, a new CNAME will be output that you can update to after the new certificate propages to all caches.
 
