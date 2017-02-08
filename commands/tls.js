@@ -20,7 +20,6 @@ Usage: \n\
   needsAuth: true,
   args: [
     {name: 'domain', description: 'The domain for TLS configure'},
-    {name: 'verification_type', description: 'The domain verification method to use. Must be dns.', optional: true},
   ],
   flags: [
     {name: 'delete', char: 'd', description: 'Remove TLS from DOMAIN', hasValue: false},

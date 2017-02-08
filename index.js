@@ -7,5 +7,5 @@ exports.topic = {
 exports.commands = [
   require('./commands/purge'),
   require('./commands/tls'),
-  require('./commands/verify')
+  require('./commands/verify'),
 ];

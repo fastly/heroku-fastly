@@ -18,7 +18,8 @@ function* app (context, heroku) {
   let approval = null;
 
   if  (context.args.verification_action.toLowerCase() == "start") {
-  request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
+    request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
+
     if (!error && response.statusCode == 200) {
       let json = JSON.parse(body);
       cli.warn("Valid approval domains: " + json.approvals.toString());
@@ -42,12 +43,11 @@ function* app (context, heroku) {
           }
         }, function(err, response, body) {
           if (!error && response.statusCode == 200) {
-            cli.warn("Domain queued for verification. This takes approximately 30 minutes. To check the status, run 'heroku fastly:verify status <domain> --app <app_name>'");
+            cli.warn("Domain queued for verification. This may take up to 30 minutes. To check the status, run 'heroku fastly:verify status DOMAIN --app APP'");
           } else {
             cli.error(body);
           }
         });
-
       });
     }
     else {
@@ -59,22 +59,22 @@ function* app (context, heroku) {
 
 if (context.args.verification_action.toLowerCase() == "status") {
     request.get({url: url, headers: {'Fastly-Key': api_key}}, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      let json = JSON.parse(body);
-        cli.warn("Staatus: " + json.state);
+
+      if (!error && response.statusCode == 200) {
+        let json = JSON.parse(body);
+        cli.warn("Status: " + json.state);
         if (json.state == "issued") {
-          cli.warn("Your cert has been issued. It can take up to an hour for it to become available. To check its availability, you can navigate to 'https://www.ssllabs.com/ssltest/' \n")
+          cli.warn("Your cert has been issued, but it may take 30 minutes or longer to become available globaly. To check availability, you can test your domain at 'https://www.ssllabs.com/ssltest/' \n")
           cli.warn("Configure the following CNAME when the cert becomes available:\n")
-          var fqdn = json.fqdn.replace("*.", "");
-          console.log(json);
-          hk.warn("CNAME  " + context.args.domain + "  " + json.fqdn);
+          var cname = json.cname.replace("*.", "");
+          cli.warn("CNAME  " + context.args.domain + "  " + cname);
         } else {
-          cli.warn("Your cert has not yet been issued.")
+          cli.warn("Your cert has not yet been issued. Please try again shortly.")
         }
-    }
-    else {
-      cli.error(body);
-    }
+      }
+      else {
+        cli.error(body);
+      }
     });
   }
 
