@@ -1,7 +1,6 @@
 'use strict';
 let cli = require('heroku-cli-util');
 var request = require('request');
-let co  = require('co');
 
 function* app (context, heroku) {
   let base_uri = context.flags.api_uri || 'https://app.fastly.com';
