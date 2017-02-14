@@ -63,10 +63,11 @@ if (context.args.verification_action.toLowerCase() == "status") {
         let json = JSON.parse(body);
         cli.warn("Status: " + json.state);
         if (json.state == "issued") {
-          cli.warn("Your cert has been issued, but it may take 30 minutes or longer to become available globaly. To check availability, you can test your domain at 'https://www.ssllabs.com/ssltest/' \n")
-          cli.warn("Configure the following CNAME when the cert becomes available:\n")
+          cli.warn("Your certificate has been issued. It could take up to an hour for the certificate to propagate globally.\n")
+          cli.warn("To use the certificate configure the following CNAME record: \n")
           var cname = json.cname.replace("*.", "");
           cli.warn("CNAME  " + context.args.domain + "  " + cname);
+
         } else {
           cli.warn("Your cert has not yet been issued. Please try again shortly.")
         }
