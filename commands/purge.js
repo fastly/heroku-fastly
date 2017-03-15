@@ -12,7 +12,7 @@ module.exports = {
   args: [ { name: 'key', optional: true } ],
   flags: [
       { name: 'all', description: 'Issues a Fastly PurgeAll', hasValue: false },
-      { name: 'soft', description: 'Forces revalidation instead of instant purge', hasValue: false },
+      { name: 'soft', description: 'Forces revalidation instead of instant purge', hasValue: false }
   ],
 
   run: hk.command(function* (context, heroku) {
