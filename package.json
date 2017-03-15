@@ -33,7 +33,7 @@
   "dependencies": {
     "heroku-cli-util": "^5.8.0",
     "request": "^2.69.0",
-    "fastly": "^1.2.1"
+    "fastly": "^2.1.0"
   },
   "devDependencies": {
     "chai": "*",

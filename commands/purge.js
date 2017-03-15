@@ -11,7 +11,8 @@ module.exports = {
   needsAuth: true,
   args: [ { name: 'key', optional: true } ],
   flags: [
-      { name: 'all', description: 'Issues a Fastly PurgeAll', hasValue: false }
+      { name: 'all', description: 'Issues a Fastly PurgeAll', hasValue: false },
+      { name: 'soft', description: 'Forces revalidation instead of instant purge', hasValue: false }
   ],
 
   run: hk.command(function* (context, heroku) {
@@ -24,20 +25,28 @@ module.exports = {
           hk.error(err);
         } else {
           hk.log(obj);
-
         }
       });
     }
 
     if (context.args.key) {
-      fastly.purgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
-        if (err) {
-          hk.error(err);
-        } else {
-          hk.log(obj);
-        }
-      });
+      if (context.flags.soft) {
+        fastly.softPurgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
+          if (err) {
+            hk.error(err);
+          } else {
+            hk.log(obj);
+          }
+        });
+      } else {
+        fastly.purgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
+          if (err) {
+            hk.error(err);
+          } else {
+            hk.log(obj);
+          }
+        });
+      }
     }
-
   })
 };
