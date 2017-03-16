@@ -66,6 +66,12 @@ To purge a surrogate-key from the cache
 heroku fastly:purge my-surrogate-key --app my-fast-app
 ```
 
+To [softpurge](https://docs.fastly.com/api/purge#soft_purge) a key from the cache
+
+```
+heroku fastly:purge my-surrogate-key --soft --app my-fast-app
+```
+
 # Development
 Clone the repo and run `npm install` to install dependencies.
 
