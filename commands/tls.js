@@ -72,7 +72,7 @@ Usage: \n\
           var json = JSON.parse(body)
           hk.styledHeader("Domain " + context.args.domain + " has been queued for TLS certificate addition. This may take a few minutes.");
           hk.warn("In the mean time, start the domain verification process by creating a DNS TXT record containing the following content: \n");
-          hk.warn("globalsign-domain-verification=" + json.metatag);
+          hk.warn(json.metatag);
           hk.warn("Once you have added this TXT record you can start the verification process by running:\n");
           hk.warn("$ heroku fastly:verify start DOMAIN —app APP");
           }
