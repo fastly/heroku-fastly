@@ -21,10 +21,10 @@ function* app (context, heroku) {
 
     if (!error && response.statusCode == 200) {
       let json = JSON.parse(body);
-      cli.warn("Valid approval domains: " + json.approvals.toString());
+      cli.warn("Valid approval domains: " + json.metadata.valid_approvals.toString());
 
       cli.prompt('Type the approval domain to use (or ENTER if only 1): ').then(function (approval) {
-        let valid = json.approvals.indexOf(approval)
+        let valid = json.metadata.valid_approvals.indexOf(approval)
 
         if (valid == -1) {
           cli.error("Entered domain does not match a valid approval. Try again");
