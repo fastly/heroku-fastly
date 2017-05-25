@@ -65,7 +65,7 @@ if (context.args.verification_action.toLowerCase() == "status") {
         if (json.state == "issued") {
           cli.warn("Your certificate has been issued. It could take up to an hour for the certificate to propagate globally.\n")
           cli.warn("To use the certificate configure the following CNAME record: \n")
-          var cname = json.cname.replace("*.", "");
+          var cname = json.dns[0].cname;
           cli.warn("CNAME  " + context.args.domain + "  " + cname);
 
         } else {
