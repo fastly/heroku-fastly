@@ -39,7 +39,7 @@
     "chai": "*",
     "mocha": "*",
     "jshint": "*"
-  }
+  },
   "files": [
     "/index.js",
     "/commands"
