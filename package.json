@@ -13,10 +13,15 @@
     {
       "name": "Andri Antoniades",
       "email": "andri@fastly.com"
+    },
+    {
+      "name": "James A Rosen",
+      "email": "james@fastly.com"
     }
   ],
   "scripts": {
-    "test": "mocha && jshint ."
+    "lint": "eslint ./*.js ./.*.js commands index.js",
+    "test": "npm run lint && mocha"
   },
   "repository": {
     "type": "git",
@@ -36,8 +41,14 @@
     "fastly": "^2.1.0"
   },
   "devDependencies": {
+    "@fastly/eslint-config": "^1.4.2",
+    "@fastly/prettier-config": "^1.1.1",
     "chai": "*",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-ember-suave": "^1.0.0",
+    "eslint-plugin-prettier": "^2.6.2",
     "mocha": "*",
-    "jshint": "*"
+    "prettier": "^1.13.7"
   }
 }
