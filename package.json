@@ -50,5 +50,9 @@
     "eslint-plugin-prettier": "^2.6.2",
     "mocha": "*",
     "prettier": "^1.13.7"
-  }
+  },
+  "files": [
+    "/index.js",
+    "/commands"
+  ]
 }
