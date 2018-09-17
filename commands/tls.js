@@ -1,6 +1,7 @@
 'use strict'
 const hk = require('heroku-cli-util')
 const request = require('request')
+const co = require('co')
 
 module.exports = {
   topic: 'fastly',
@@ -30,87 +31,86 @@ Usage: \n\
     },
     { name: 'api_uri', char: 'u', description: 'Override Fastly API URI', hasValue: true },
   ],
-  run: hk.command(function*(context, heroku) {
-    let baseUri = context.flags.api_uri || 'https://app.fastly.com'
-    let config = yield heroku
-      .apps(context.app)
-      .configVars()
-      .info()
-    let apiKey = context.flags.api_key || config.FASTLY_API_KEY
+  run: hk.command(function(context, heroku) {
+    return co(function*() {
+      let baseUri = context.flags.api_uri || 'https://app.fastly.com'
+      let config = yield heroku.get(`/apps/${context.app}/config-vars`)
+      let apiKey = context.flags.api_key || config.FASTLY_API_KEY
 
-    if (!apiKey) {
-      hk.error(
-        'config var FASTLY_API_KEY not found! The Fastly add-on is required to configure TLS. Install Fastly at https://elements.heroku.com/addons/fastly'
-      )
-      process.exit(1)
-    }
+      if (!apiKey) {
+        hk.error(
+          'config var FASTLY_API_KEY not found! The Fastly add-on is required to configure TLS. Install Fastly at https://elements.heroku.com/addons/fastly'
+        )
+        process.exit(1)
+      }
 
-    if (context.flags.delete) {
-      request(
-        {
-          method: 'DELETE',
-          url: `${baseUri}/plugin/heroku/tls`,
-          headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
-          form: {
-            domain: context.args.domain,
-            service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
+      if (context.flags.delete) {
+        request(
+          {
+            method: 'DELETE',
+            url: `${baseUri}/plugin/heroku/tls`,
+            headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
+            form: {
+              domain: context.args.domain,
+              service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
+            },
           },
-        },
-        function(err, response, body) {
-          if (response.statusCode != 200) {
-            hk.error(
-              `Fastly API request Error! code: ${response.statusCode} ${response.statusMessage} ${
-                JSON.parse(body).msg
-              }`
-            )
-            process.exit(1)
-          } else {
-            hk.styledHeader(
-              `Domain ${
-                context.args.domain
-              } queued for TLS removal. This domain will no longer support TLS`
-            )
+          function(err, response, body) {
+            if (response.statusCode != 200) {
+              hk.error(
+                `Fastly API request Error! code: ${response.statusCode} ${response.statusMessage} ${
+                  JSON.parse(body).msg
+                }`
+              )
+              process.exit(1)
+            } else {
+              hk.styledHeader(
+                `Domain ${
+                  context.args.domain
+                } queued for TLS removal. This domain will no longer support TLS`
+              )
+            }
           }
-        }
-      )
-    } else {
-      request(
-        {
-          method: 'POST',
-          url: `${baseUri}/plugin/heroku/tls`,
-          headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
-          form: {
-            domain: context.args.domain,
-            verification_type: 'dns', // eslint-disable-line camelcase
-            service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
+        )
+      } else {
+        request(
+          {
+            method: 'POST',
+            url: `${baseUri}/plugin/heroku/tls`,
+            headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
+            form: {
+              domain: context.args.domain,
+              verification_type: 'dns', // eslint-disable-line camelcase
+              service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
+            },
           },
-        },
-        function(err, response, body) {
-          if (response.statusCode != 200) {
-            hk.error(
-              `Fastly API request Error! code: ${response.statusCode} ${response.statusMessage} ${
-                JSON.parse(body).msg
-              }`
-            )
-            process.exit(1)
-          } else {
-            const json = JSON.parse(body)
-            hk.styledHeader(
-              `Domain ${
-                context.args.domain
-              } has been queued for TLS certificate addition. This may take a few minutes.`
-            )
-            hk.warn(
-              'In the mean time, start the domain verification process by creating a DNS TXT record containing the following content: \n'
-            )
-            hk.warn(json.metatag)
-            hk.warn(
-              'Once you have added this TXT record you can start the verification process by running:\n'
-            )
-            hk.warn('$ heroku fastly:verify start DOMAIN —app APP')
+          function(err, response, body) {
+            if (response.statusCode != 200) {
+              hk.error(
+                `Fastly API request Error! code: ${response.statusCode} ${response.statusMessage} ${
+                  JSON.parse(body).msg
+                }`
+              )
+              process.exit(1)
+            } else {
+              const json = JSON.parse(body)
+              hk.styledHeader(
+                `Domain ${
+                  context.args.domain
+                } has been queued for TLS certificate addition. This may take a few minutes.`
+              )
+              hk.warn(
+                'In the mean time, start the domain verification process by creating a DNS TXT record containing the following content: \n'
+              )
+              hk.warn(json.metatag)
+              hk.warn(
+                'Once you have added this TXT record you can start the verification process by running:\n'
+              )
+              hk.warn('$ heroku fastly:verify start DOMAIN —app APP')
+            }
           }
-        }
-      )
-    }
+        )
+      }
+    })
   }),
 }

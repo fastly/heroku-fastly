@@ -36,9 +36,10 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "heroku-cli-util": "^5.8.0",
-    "request": "^2.69.0",
-    "fastly": "^2.2.1"
+    "co": "^4.6.0",
+    "fastly": "^2.2.1",
+    "heroku-cli-util": "^8.0.10",
+    "request": "^2.69.0"
   },
   "devDependencies": {
     "@fastly/eslint-config": "^1.4.2",
