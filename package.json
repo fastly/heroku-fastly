@@ -38,7 +38,7 @@
   "dependencies": {
     "heroku-cli-util": "^5.8.0",
     "request": "^2.69.0",
-    "fastly": "^2.1.0"
+    "fastly": "^2.2.1"
   },
   "devDependencies": {
     "@fastly/eslint-config": "^1.4.2",
