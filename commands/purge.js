@@ -1,5 +1,6 @@
 'use strict'
 const hk = require('heroku-cli-util')
+const co = require('co')
 
 module.exports = {
   topic: 'fastly',
@@ -16,34 +17,17 @@ module.exports = {
     { name: 'soft', description: 'Forces revalidation instead of instant purge', hasValue: false },
   ],
 
-  run: hk.command(function*(context, heroku) {
-    let config = yield heroku
-      .apps(context.app)
-      .configVars()
-      .info()
-    const fastly = require('fastly')(config.FASTLY_API_KEY)
-
-    if (context.flags.all) {
-      fastly.purgeAll(config.FASTLY_SERVICE_ID, function(err, obj) {
-        if (err) {
-          hk.error(err)
-        } else {
-          hk.log(obj)
-        }
-      })
+  run: hk.command(function(context, heroku) {
+    if (!context.flags.all && !context.args.key) {
+      return hk.error('You must specify `--all` or a key to purge with.')
     }
 
-    if (context.args.key) {
-      if (context.flags.soft) {
-        fastly.softPurgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
-          if (err) {
-            hk.error(err)
-          } else {
-            hk.log(obj)
-          }
-        })
-      } else {
-        fastly.purgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
+    return co(function*() {
+      let config = yield heroku.get(`/apps/${context.app}/config-vars`)
+      const fastly = require('fastly')(config.FASTLY_API_KEY)
+
+      if (context.flags.all) {
+        fastly.purgeAll(config.FASTLY_SERVICE_ID, function(err, obj) {
           if (err) {
             hk.error(err)
           } else {
@@ -51,6 +35,26 @@ module.exports = {
           }
         })
       }
-    }
+
+      if (context.args.key) {
+        if (context.flags.soft) {
+          fastly.softPurgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
+            if (err) {
+              hk.error(err)
+            } else {
+              hk.log(obj)
+            }
+          })
+        } else {
+          fastly.purgeKey(config.FASTLY_SERVICE_ID, context.args.key, function(err, obj) {
+            if (err) {
+              hk.error(err)
+            } else {
+              hk.log(obj)
+            }
+          })
+        }
+      }
+    })
   }),
 }
