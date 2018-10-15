@@ -114,7 +114,10 @@ Type the approval domain to use (or ENTER if only 1): : ^C
 ## Testing
 Tests can be run with `npm test`.
 
+## Contact us
+Have an issue? Please send an email to support@fastly.com.
+
 ## Contributing
-Have an issue? Want to see new functionality? Please open an issue or pull request.
+Want to see new functionality? Please open a pull request.
 
 
