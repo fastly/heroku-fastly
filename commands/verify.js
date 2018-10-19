@@ -32,7 +32,7 @@ module.exports = {
   ],
   run: cli.command(function(context, heroku) {
     return co(function*() {
-      let baseUri = context.flags.api_uri || 'https://app.fastly.com'
+      let baseUri = context.flags.api_uri || 'https://api.fastly.com'
       let config = yield heroku.get(`/apps/${context.app}/config-vars`)
       let apiKey = context.flags.api_key || config.FASTLY_API_KEY
 
