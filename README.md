@@ -83,7 +83,7 @@ Further detail on building Heroku CLI plugins is available in the [devcenter](ht
 * You can make sure this is working by running `heroku plugins`, will return something like:
 
 ```
-heroku-fastly 1.0.6 (link) /Users/your-path/heroku-fastly
+heroku-fastly 1.0.7 (link) /Users/your-path/heroku-fastly
 ```
 
 * Test `tls` command. Run `heroku fastly:tls www.example.org --app my-fast-app`. This command will return something like:
