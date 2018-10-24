@@ -31,6 +31,8 @@ module.exports = {
     { name: 'api_uri', char: 'u', description: 'Override Fastly API URI', hasValue: true },
   ],
   run: cli.command(function(context, heroku) {
+    cli.warn('heroku-fastly is deprecated. Please install @fastly/heroku-plugin')
+
     return co(function*() {
       let baseUri = context.flags.api_uri || 'https://api.fastly.com'
       let config = yield heroku.get(`/apps/${context.app}/config-vars`)

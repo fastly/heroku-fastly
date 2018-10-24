@@ -18,6 +18,8 @@ module.exports = {
   ],
 
   run: hk.command(function(context, heroku) {
+    hk.warn('heroku-fastly is deprecated. Please install @fastly/heroku-plugin')
+
     if (!context.flags.all && !context.args.key) {
       return hk.error('You must specify `--all` or a key to purge with.')
     }
