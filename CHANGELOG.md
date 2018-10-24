@@ -1,3 +1,7 @@
+### 2.0.0
+
+* Rename package from heroku-fastly to @fastly/heroku-plugin
+
 ### 1.0.7
 
 * Use api.fastly.com instead of app.fastly.com for API access
