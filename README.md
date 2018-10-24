@@ -8,7 +8,7 @@ Heroku CLI plugin for interacting with fastly configuration.
 Install the heroku-fastly plugin using the `heroku plugins` command. More details are available in Heroku's [Devcenter](https://devcenter.heroku.com/articles/using-cli-plugins).
 
 ```
-heroku plugins:install heroku-fastly
+heroku plugins:install @fastly/heroku-plugin
 ```
 
 # Usage
