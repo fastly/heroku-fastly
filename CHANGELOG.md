@@ -1,4 +1,8 @@
-### 2.0.0
+### 2.0.1
+
+* 🔊 Add better error reporting
+
+## 2.0.0
 
 * Rename package from heroku-fastly to @fastly/heroku-plugin
 
@@ -29,7 +33,7 @@
 * upgrade `fastly` dependency
 * display CNAME when verification is complete
 
-### 1.0.0
+## 1.0.0
 
 * first implementation of `verify` command
 * improve messaging of `tls` command
