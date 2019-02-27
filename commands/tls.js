@@ -73,16 +73,17 @@ Usage: \n\
           }
         )
       } else {
+        const form = {
+          domain: context.args.domain,
+          verification_type: 'dns', // eslint-disable-line camelcase
+          service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
+        }
         request(
           {
             method: 'POST',
             url: `${baseUri}/plugin/heroku/tls`,
             headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
-            form: {
-              domain: context.args.domain,
-              verification_type: 'dns', // eslint-disable-line camelcase
-              service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
-            },
+            form,
           },
           function(err, response, body) {
             if (response.statusCode != 200) {
@@ -93,20 +94,35 @@ Usage: \n\
               )
               process.exit(1)
             } else {
-              const json = JSON.parse(body)
-              hk.styledHeader(
-                `Domain ${
-                  context.args.domain
-                } has been queued for TLS certificate addition. This may take a few minutes.`
-              )
-              hk.warn(
-                'In the mean time, start the domain verification process by creating a DNS TXT record containing the following content: \n'
-              )
-              hk.warn(json.metatag)
-              hk.warn(
-                'Once you have added this TXT record you can start the verification process by running:\n'
-              )
-              hk.warn('$ heroku fastly:verify start DOMAIN —app APP')
+              const output = JSON.parse(body)
+              if (Array.isArray(output.msg)) {
+                output.msg.forEach(message => {
+                  if (!message.success) {
+                    if (Array.isArray(message.errors)) {
+                      message.errors.forEach(error => hk.error(error))
+                    }
+                  }
+                })
+              }
+              if (output.metatag) {
+                hk.styledHeader(
+                  `Domain ${
+                    context.args.domain
+                  } has been queued for TLS certificate addition. This may take a few minutes.`
+                )
+                hk.warn(
+                  'In the mean time, start the domain verification process by creating a DNS TXT record containing the following content: \n'
+                )
+                hk.warn(output.metatag)
+                hk.warn(
+                  'Once you have added this TXT record you can start the verification process by running:\n'
+                )
+                hk.warn('$ heroku fastly:verify start DOMAIN —app APP')
+              } else {
+                hk.warn(
+                  'Unable to process this request. Please wait a few minutes and try your request again. If the problem persists, please contact support@fastly.com ❤️'
+                )
+              }
             }
           }
         )
