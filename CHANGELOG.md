@@ -1,46 +1,79 @@
-### 2.0.1
+## 2.0.1
 
-* 🔊 Add better error reporting
+### Added
+
+- 🔊 better error reporting
+
+### Changed
+
+- 📝 Changelog now in https://keepachangelog.com/en/1.0.0/ format
 
 ## 2.0.0
 
-* Rename package from heroku-fastly to @fastly/heroku-plugin
+### Changed
 
-### 1.0.7
+- Rename package from heroku-fastly to @fastly/heroku-plugin
 
-* Use api.fastly.com instead of app.fastly.com for API access
+## 1.0.7
 
-### 1.0.6
+### Changed
 
-* update dependencies
+- Use api.fastly.com instead of app.fastly.com for API access
 
-### 1.0.5
+## 1.0.6
 
-* downgrade heroku-cli-util dependency
+### Changed
 
-### 1.0.4
+- update dependencies
 
-* upgrade heroku-cli-util dependency
+## 1.0.5
 
-### 1.0.3
+### Changed
 
-* set `files` in `package.json`, as now required by ocliff
+- downgrade heroku-cli-util dependency
 
-### 1.0.2
+## 1.0.4
 
-* improve messaging of `tls` and `verify` commands
-* add soft-purge option
-* upgrade `fastly` dependency
-* display CNAME when verification is complete
+### Changed
+
+- upgrade heroku-cli-util dependency
+
+## 1.0.3
+
+### Changed
+
+- set `files` in `package.json`, as now required by ocliff
+
+## 1.0.2
+
+### Added
+
+- improve messaging of `tls` and `verify` commands
+- add soft-purge option
+- display CNAME when verification is complete
+
+### Changed
+
+- upgrade `fastly` dependency
 
 ## 1.0.0
 
-* first implementation of `verify` command
-* improve messaging of `tls` command
-* less logging
+### Added
 
-### 0.0.3
+- first implementation of `verify` command
+- improve messaging of `tls` command
 
-* output copyable metatag for `dns` and `url` verifications
-* `tls` command prints CNAME
-* improve help text
+### Changed
+
+- less logging
+
+## 0.0.3
+
+### Added
+
+- `tls` command prints CNAME
+- improve help text
+
+### Changed
+
+- output copyable metatag for `dns` and `url` verifications

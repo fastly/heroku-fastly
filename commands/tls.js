@@ -119,7 +119,9 @@ Usage: \n\
                 )
                 hk.warn('$ heroku fastly:verify start DOMAIN —app APP')
               } else {
-                hk.warn('Unable to process this request.')
+                hk.warn(
+                  'Unable to process this request. Please wait a few minutes and try your request again. If the problem persists, please contact support@fastly.com ❤️'
+                )
               }
             }
           }
