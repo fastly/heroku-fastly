@@ -1,3 +1,9 @@
+## 2.0.2
+
+### Changed
+
+- ⬆️  Fixed security problems in dependencies
+
 ## 2.0.1
 
 ### Added
