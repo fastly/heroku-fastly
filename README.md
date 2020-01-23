@@ -115,6 +115,16 @@ Type the approval domain to use (or ENTER if only 1): : ^C
 ## Testing
 Tests can be run with `npm test`.
 
+## Publishing
+
+- We follow [Semantic versioning](https://semver.org/) with regards to the
+  version of this plugin. Any pull-requests to this project must include an
+  appropriate change to the `package.json` file (as well as the
+  `package-lock.json` file) and the `CHANGELOG.md` file.
+
+- After any PR has been merged, run an `npm publish` command from the `master`
+  branch after pulling all changes in from `github`.
+
 ## Contact us
 Have an issue? Please send an email to support@fastly.com.
 
