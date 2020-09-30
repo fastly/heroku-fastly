@@ -1,7 +1,10 @@
 'use strict'
 const hk = require('heroku-cli-util')
-const request = require('request')
 const co = require('co')
+const apiClient = require('./api')
+const utils = require('./utils')
+
+const JsonApiDataStore = require('jsonapi-datastore').JsonApiDataStore
 
 module.exports = {
   topic: 'fastly',
@@ -13,120 +16,187 @@ Requirements: \n\
  - The Fastly Service must have DOMAIN configured in the active version \n\
  - Heroku pricing plan must include TLS Domain(s) \n\
  - Wildcard domains are not allowed \n\n\
-You must verify ownership of DOMAIN after running this command. \n\
-Valid VERIFICATION_TYPES: dns\n\
-  DNS: Create a DNS TXT record with the provided metatag via your DNS provider. \n\
 Usage: \n\
-  heroku fastly:tls www.example.org dns --app my-fast-app\n ',
+  heroku fastly:tls www.example.org --app my-fast-app\n ',
   needsApp: true,
   needsAuth: true,
   args: [{ name: 'domain', description: 'The domain for TLS configure' }],
   flags: [
-    { name: 'delete', char: 'd', description: 'Remove TLS from DOMAIN', hasValue: false },
+    {
+      name: 'delete',
+      char: 'd',
+      description: 'Remove TLS from DOMAIN',
+      hasValue: false,
+    },
+    {
+      name: 'api_uri',
+      char: 'u',
+      description: 'Override Fastly API URI',
+      hasValue: true,
+    },
     {
       name: 'api_key',
       char: 'k',
       description: 'Override FASTLY_API_KEY config var',
       hasValue: true,
     },
-    { name: 'api_uri', char: 'u', description: 'Override Fastly API URI', hasValue: true },
   ],
-  run: hk.command(function(context, heroku) {
-    return co(function*() {
+
+  run: hk.command(function (context, heroku) {
+    return co(function* () {
       let baseUri = context.flags.api_uri || 'https://api.fastly.com'
       let config = yield heroku.get(`/apps/${context.app}/config-vars`)
       let apiKey = context.flags.api_key || config.FASTLY_API_KEY
+      let domain = context.args.domain
 
-      if (!apiKey) {
-        hk.error(
-          'config var FASTLY_API_KEY not found! The Fastly add-on is required to configure TLS. Install Fastly at https://elements.heroku.com/addons/fastly'
-        )
-        process.exit(1)
-      }
+      utils.validateAPIKey(apiKey)
+
+      const api = new apiClient({
+        baseUri: baseUri,
+        apiKey: apiKey,
+      })
 
       if (context.flags.delete) {
-        request(
-          {
-            method: 'DELETE',
-            url: `${baseUri}/plugin/heroku/tls`,
-            headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
-            form: {
-              domain: context.args.domain,
-              service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
-            },
-          },
-          function(err, response, body) {
-            if (response.statusCode != 200) {
-              hk.error(
-                `Fastly API request Error! code: ${response.statusCode} ${response.statusMessage} ${
-                  JSON.parse(body).msg
-                }`
-              )
-              process.exit(1)
-            } else {
-              hk.styledHeader(
-                `Domain ${
-                  context.args.domain
-                } queued for TLS removal. This domain will no longer support TLS`
-              )
-            }
-          }
-        )
+        api
+          .getDomains()
+          .then(locateSubscriptionDetails(domain))
+          .then(deleteActivation(api, domain))
+          .then(deleteSubscription(api, domain))
+          .catch(utils.renderFastlyError())
       } else {
-        const form = {
-          domain: context.args.domain,
-          verification_type: 'dns', // eslint-disable-line camelcase
-          service_id: config.FASTLY_SERVICE_ID, // eslint-disable-line camelcase
-        }
-        request(
-          {
-            method: 'POST',
-            url: `${baseUri}/plugin/heroku/tls`,
-            headers: { 'Fastly-Key': apiKey, 'Content-Type': 'application/json' },
-            form,
-          },
-          function(err, response, body) {
-            if (response.statusCode != 200) {
-              hk.error(
-                `Fastly API request Error! code: ${response.statusCode} ${response.statusMessage} ${
-                  JSON.parse(body).msg
-                }`
-              )
-              process.exit(1)
-            } else {
-              const output = JSON.parse(body)
-              if (Array.isArray(output.msg)) {
-                output.msg.forEach(message => {
-                  if (!message.success) {
-                    if (Array.isArray(message.errors)) {
-                      message.errors.forEach(error => hk.error(error))
-                    }
-                  }
-                })
-              }
-              if (output.metatag) {
-                hk.styledHeader(
-                  `Domain ${
-                    context.args.domain
-                  } has been queued for TLS certificate addition. This may take a few minutes.`
-                )
-                hk.warn(
-                  'In the mean time, start the domain verification process by creating a DNS TXT record containing the following content: \n'
-                )
-                hk.warn(output.metatag)
-                hk.warn(
-                  'Once you have added this TXT record you can start the verification process by running:\n'
-                )
-                hk.warn('$ heroku fastly:verify start DOMAIN —app APP')
-              } else {
-                hk.warn(
-                  'Unable to process this request. Please wait a few minutes and try your request again. If the problem persists, please contact support@fastly.com ❤️'
-                )
-              }
-            }
-          }
-        )
+        api
+          .getDomains()
+          .then(locateSubscriptionDetails(domain))
+          .then(createSubscription(api, domain))
+          .catch(utils.renderFastlyError())
       }
     })
   }),
+}
+
+function createSubscription(api, domain) {
+  return (data) => {
+    if (!data.subscriptionId) {
+      api
+        .createSubscription(domain)
+        .then((data) => {
+          const store = new JsonApiDataStore()
+          let subscription = store.sync(data)
+          let state = subscription.state
+          let challenges = subscription.tls_authorizations[0].challenges
+
+          if (state === 'issued' || state === 'renewing') {
+            hk.log(
+              `The domain ${domain} is currently in a state of ${state}. It could take up to an hour for the certificate to propagate globally.\n`
+            )
+
+            hk.log(
+              'To use the certificate configure the following CNAME record\n'
+            )
+            utils.displayChallenge(challenges, 'managed-http-cname')
+
+            hk.log(
+              'As an alternative to using a CNAME record the following A record can be configured\n'
+            )
+            utils.displayChallenge(challenges, 'managed-http-a')
+          }
+
+          if (state === 'pending' || state === 'processing') {
+            hk.log(
+              `The domain ${domain} is currently in a state of ${state} and the issuing of a certificate may take up to 30 minutes\n`
+            )
+
+            hk.log(
+              'To start the domain verification process create a DNS CNAME record with the following values\n'
+            )
+            utils.displayChallenge(challenges, 'managed-dns')
+
+            hk.log(
+              'Alongside the initial verification record configure the following CNAME record\n'
+            )
+            utils.displayChallenge(challenges, 'managed-http-cname')
+
+            hk.log(
+              'As an alternative to using a CNAME record the following A record can be configured\n'
+            )
+            utils.displayChallenge(challenges, 'managed-http-a')
+          }
+        })
+        .catch((e) => {
+          hk.error(`Fastly Plugin execution - ${e.name} - ${e.message}`)
+          process.exit(1)
+        })
+    } else {
+      hk.error(`The domain ${domain} already has a TLS subscription`)
+    }
+  }
+}
+
+function deleteActivation(api, domain) {
+  return (data) => {
+    if (data.activationId) {
+      api
+        .deleteActivation(data.activationId)
+        .then(() => {
+          hk.log(`TLS subscription for domain ${domain} has been deactivated`)
+        })
+        .then(() => {
+          hk.log(`TLS subscription for domain ${domain} was not active`)
+        })
+        .catch((e) => {
+          hk.error(`Fastly Plugin execution - ${e.name} - ${e.message}`)
+          process.exit(1)
+        })
+    }
+    return data
+  }
+}
+
+function deleteSubscription(api, domain) {
+  return (data) => {
+    if (data.subscriptionId) {
+      api
+        .deleteSubscription(data.subscriptionId)
+        .then(() => {
+          hk.log(`TLS subscription for domain ${domain} has been removed`)
+        })
+        .then(() => {
+          hk.log('This domain will no longer support TLS')
+        })
+        .catch((err) => {
+          hk.error(`Fastly Plugin execution - ${e.name} - ${e.message}`)
+          process.exit(1)
+        })
+    } else {
+      hk.log(`The domain ${domain} does not support TLS`)
+    }
+  }
+}
+
+function locateSubscriptionDetails(domain) {
+  return (data) => {
+    const store = new JsonApiDataStore()
+    store.sync(data)
+    const tlsDomain = store.find('tls_domain', domain)
+
+    const subDetails = {
+      activationId: null,
+      subscriptionId: null,
+    }
+
+    if (tlsDomain) {
+      let activations = tlsDomain.tls_activations
+      let subscriptions = tlsDomain.tls_subscriptions
+
+      if (activations.length > 0) {
+        subDetails.activationId = activations[0].id
+      }
+
+      if (subscriptions.length > 0) {
+        subDetails.subscriptionId = subscriptions[0].id
+      }
+    }
+
+    return subDetails
+  }
 }

@@ -1,0 +1,14 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+
+  "env": {
+    "es6": true
+  },
+  "rules": {
+    "semi": ["off", "always"],
+    "quotes": ["warn", "single"]
+  }
+}
