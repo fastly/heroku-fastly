@@ -163,7 +163,7 @@ function deleteSubscription(api, domain) {
         .then(() => {
           hk.log('This domain will no longer support TLS')
         })
-        .catch((err) => {
+        .catch((e) => {
           hk.error(`Fastly Plugin execution - ${e.name} - ${e.message}`)
           process.exit(1)
         })
