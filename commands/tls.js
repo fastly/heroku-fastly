@@ -168,7 +168,7 @@ function deleteSubscription(api, domain) {
           process.exit(1)
         })
     } else {
-      hk.log(`The domain ${domain} does not support TLS`)
+      hk.error(`The domain ${domain} does not support TLS`)
     }
   }
 }
