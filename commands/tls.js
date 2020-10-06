@@ -140,13 +140,12 @@ function deleteActivation(api, domain) {
         .then(() => {
           hk.log(`TLS subscription for domain ${domain} has been deactivated`)
         })
-        .then(() => {
-          hk.log(`TLS subscription for domain ${domain} was not active`)
-        })
         .catch((e) => {
           hk.error(`Fastly Plugin execution - ${e.name} - ${e.message}`)
           process.exit(1)
         })
+    } else {
+      hk.log(`TLS subscription for domain ${domain} was not active`)
     }
     return data
   }
@@ -159,8 +158,6 @@ function deleteSubscription(api, domain) {
         .deleteSubscription(data.subscriptionId)
         .then(() => {
           hk.log(`TLS subscription for domain ${domain} has been removed`)
-        })
-        .then(() => {
           hk.log('This domain will no longer support TLS')
         })
         .catch((e) => {
