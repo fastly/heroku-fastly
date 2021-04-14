@@ -20,8 +20,8 @@
     }
   ],
   "scripts": {
-    "lint": "eslint ./*.js ./.*.js commands index.js",
-    "test": "npm run lint && mocha"
+    "pretest": "prettier --write . && eslint --ignore-path .gitignore .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -39,18 +39,17 @@
     "co": "^4.6.0",
     "fastly": "^2.2.1",
     "heroku-cli-util": "^8.0.10",
-    "request": "^2.69.0"
+    "jsonapi-datastore": "^0.4.0-beta",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@fastly/eslint-config": "^1.4.2",
-    "@fastly/prettier-config": "^1.1.1",
-    "chai": "*",
-    "eslint": "^4.19.1",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-ember-suave": "^1.0.0",
-    "eslint-plugin-prettier": "^2.6.2",
-    "mocha": "*",
-    "prettier": "^1.13.7"
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.9.0",
+    "jest": "^26.4.2",
+    "jest-fetch-mock": "^3.0.3",
+    "jest-mock-process": "^1.4.0",
+    "prettier": "^2.1.2",
+    "request": "^2.88.2"
   },
   "files": [
     "/index.js",

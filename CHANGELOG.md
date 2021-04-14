@@ -1,8 +1,16 @@
+## 2.0.3 (unreleased)
+
+### Changed
+
+- TLS command, (Create & Delete) issues and removes TLS certificates via Fastly tls API endpoints
+- Verify command queries state of TLS certificate via Fastly tls API endpoints
+- Fixed examples in Readme.md and cli command help output
+
 ## 2.0.2
 
 ### Changed
 
-- ⬆️  Fixed security problems in dependencies
+- ⬆️ Fixed security problems in dependencies
 
 ## 2.0.1
 
