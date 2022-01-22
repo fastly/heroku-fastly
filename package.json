@@ -40,7 +40,7 @@
     "fastly": "^2.2.1",
     "heroku-cli-util": "^8.0.10",
     "jsonapi-datastore": "^0.4.0-beta",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^3.1.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
