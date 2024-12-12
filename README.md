@@ -1,3 +1,7 @@
+# Archived
+
+This repository is archived because the Fastly Heroku Add-on is no longer available.
+
 # Heroku Fastly Plugin
 
 Heroku CLI plugin for interacting with fastly configuration.
